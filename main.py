@@ -1,8 +1,5 @@
 
-from tkinter import Tk, Canvas, Frame, BOTH
 import random
-
-n = 0
 
 
 class Board(Frame):
@@ -12,51 +9,76 @@ class Board(Frame):
     def __init__(self):
         super().__init__()
         self.initBoard()
-
+#Рандомом задаются заполненные клетки
     def initBoard(self):
-        self.pack(fill=BOTH, expand=1)
-        canvas = Canvas(self)
-        for i in range(0, 600, 50):
-            canvas.create_line(0, i, 600, i)
-            canvas.create_line(i, 0, i, 600)
         for i in range(12):
             self.first_cells.append([random.randint(0, 1) for _ in range(12)])
         for i in range(12):
             self.update_cells.append([0 for _ in range(12)])
         self.boardReconstruction()
-        canvas.pack(fill=BOTH, expand=1)
-
+#Подсчет количества соседей
     def checkNeighbours(self):
         for i in range(12):
             for j in range(12):
                 # 1
                 if i == 0:
                     if j == 0:
-                        self.update_cells[0][j] = self.first_cells[i + 1][j + 1]
+                        self.update_cells[0][0] = self.first_cells[1][1] + self.first_cells[0][1] + self.first_cells[1][
+                            0] + self.first_cells[0][11] + self.first_cells[1][11] + self.first_cells[11][0] + \
+                                                  self.first_cells[11][1] + self.first_cells[11][11]
                     else:
-
+                        if j != 11:
+                            self.update_cells[0][j] = self.first_cells[0][j + 1] + self.first_cells[0][j - 1] + \
+                                                      self.first_cells[1][j + 1] + self.first_cells[1][j - 1] + \
+                                                      self.first_cells[1][j] + self.first_cells[11][j + 1] + \
+                                                      self.first_cells[11][j] + self.first_cells[11][j - 1]
+                        else:
+                            self.update_cells[0][11] = self.first_cells[0][0] + self.first_cells[0][10] + \
+                                                       self.first_cells[1][0] + self.first_cells[1][10] + \
+                                                       self.first_cells[1][11] + self.first_cells[11][0] + \
+                                                       self.first_cells[11][11] + self.first_cells[11][10]
                 # 2
-                elif:
+                if i != 0:
                     if j == 0:
-
+                        if i != 11:
+                            self.update_cells[i][0] = self.first_cells[i - 1][0] + self.first_cells[i + 1][0] + \
+                                                      self.first_cells[i - 1][1] + self.first_cells[i][1] + \
+                                                      self.first_cells[i + 1][1] + self.first_cells[i][11] + \
+                                                      self.first_cells[i - 1][11] + self.first_cells[i + 1][11]
+                        else:
+                            self.update_cells[i][0] = self.first_cells[10][0] + self.first_cells[0][0] + \
+                                                      self.first_cells[10][1] + self.first_cells[11][1] + \
+                                                      self.first_cells[0][1] + self.first_cells[11][11] + \
+                                                      self.first_cells[10][11] + self.first_cells[0][11]
                 # 3
-                elif:
-                    if i == 11:
-                        if j == 11:
-
+                if i == 11:
+                    if j == 11:
+                        self.update_cells[11][11] = self.first_cells[0][0] + self.first_cells[11][0] + \
+                                                    self.first_cells[10][0] + self.first_cells[0][10] + \
+                                                    self.first_cells[0][11] + self.first_cells[10][10] + \
+                                                    self.first_cells[10][11] + self.first_cells[11][10]
                     else:
+                        if j != 0:
+                            self.update_cells[11][j] = self.first_cells[11][j + 1] + self.first_cells[11][j - 1] + \
+                                                       self.first_cells[10][j] + self.first_cells[10][j - 1] + \
+                                                       self.first_cells[10][j + 1] + self.first_cells[0][j] + \
+                                                       self.first_cells[0][j - 1] + self.first_cells[0][j + 1]
 
                 # 4
-                elif:
+                if i != 11 and i != 0:
                     if j == 11:
+                        self.update_cells[i][11] = self.first_cells[i - 1][11] + self.first_cells[i + 1][11] + \
+                                                   self.first_cells[i][10] + self.first_cells[i - 1][10] + \
+                                                   self.first_cells[i + 1][10] + self.first_cells[i][0] + \
+                                                   self.first_cells[i - 1][0] + self.first_cells[i + 1][0]
 
                 # 5
-                else:
+                if i != 11 and i != 0 and j != 0 and j != 11:
                     self.update_cells[i][j] = self.first_cells[i + 1][j + 1] + self.first_cells[i][j + 1] + \
                                               self.first_cells[i + 1][j] + self.first_cells[i - 1][j + 1] + \
                                               self.first_cells[i + 1][j - 1] + self.first_cells[i][j - 1] + \
                                               self.first_cells[i - 1][j] + self.first_cells[i - 1][j - 1]
-
+#Обновление поля
     def tableReconstruction(self):
         for i in range(12):
             for j in range(12):
@@ -68,7 +90,7 @@ class Board(Frame):
                 else:
                     if self.update_cells[i][j] == 3:
                         self.first_cells[i][j] = 1
-
+#Вывод поля в консоль
     def boardReconstruction(self):
         global n
         canvas = Canvas(self)
@@ -77,28 +99,23 @@ class Board(Frame):
                 print(self.first_cells[i][j], end=' ')
             print()
         print()
-        for i in range(12):
-            for j in range(12):
-                if self.first_cells[i][j] == 1:
-                    canvas.create_rectangle(
-                        i * 50, j * 50, (i + 1) * 50, (j + 1) * 50,
-                        outline="#05f", fill="#f50"
-                    )
-        n += 1
+        canvas.create_rectangle(
+            i * 50, j * 50, (i + 1) * 50, (j + 1) * 50,
+            outline="#05f", fill="#f50"
+        )
+        n -= 1
         self.after(5, self.oneStep())
-
     def oneStep(self):
-        if n < 10:
+        if n > -1:
             self.checkNeighbours()
             self.tableReconstruction()
             self.boardReconstruction()
 
-
+#Количество итераций обновления поля задается вручную
 def main():
-    root = Tk()
-    ex = Board()
-    root.geometry("600x600+600+600")
-    root.mainloop()
+    global n
+    print('Введите количество итераций')
+    n = int(input())
 
 
 if __name__ == '__main__':
