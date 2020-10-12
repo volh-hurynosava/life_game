@@ -1,8 +1,7 @@
-
 import random
+import pandas
 
-
-class Board(Frame):
+class Board():
     first_cells = []
     update_cells = []
 
@@ -93,18 +92,13 @@ class Board(Frame):
 #Вывод поля в консоль
     def boardReconstruction(self):
         global n
-        canvas = Canvas(self)
         for i in range(12):
             for j in range(12):
                 print(self.first_cells[i][j], end=' ')
             print()
         print()
-        canvas.create_rectangle(
-            i * 50, j * 50, (i + 1) * 50, (j + 1) * 50,
-            outline="#05f", fill="#f50"
-        )
         n -= 1
-        self.after(5, self.oneStep())
+        self.oneStep()
     def oneStep(self):
         if n > -1:
             self.checkNeighbours()
@@ -116,6 +110,7 @@ def main():
     global n
     print('Введите количество итераций')
     n = int(input())
+    Board()
 
 
 if __name__ == '__main__':
